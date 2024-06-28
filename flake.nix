@@ -1,26 +1,30 @@
 {
   description = "Testing writers for nix";
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-  };
+  # inputs = {
+  #   nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  #   flake-utils.url = "github:numtide/flake-utils";
+  # };
   outputs =
     { self, nixpkgs, ... }@inputs:
     let
-      system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        system = system;
-        config.allowUnfree = true;
-      };
+      forAllSystems = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.unix;
+
+      nixpkgsFor = forAllSystems (system: import nixpkgs {
+        inherit system;
+      });
     in
     {
-      devShells.${system}.default = (import ./shell.nix { inherit pkgs; });
 
 # https://discourse.nixos.org/t/basic-flake-run-existing-python-bash-script/19886/2
       # nix run ".#output1"
-      output1 = pkgs.writeScriptBin "myscript" ''
+      output1 = {config, ...}:
+      with nixpkgs.lig;
+      {
+      pkgs.writeScriptBin "myscript" ''
         echo foo
       '';
+      }
+      
       # nix run ".#output2"
       # ensure that there is ./myscript.sh locally
       output2 = pkgs.writeScriptBin "myscript" ''
