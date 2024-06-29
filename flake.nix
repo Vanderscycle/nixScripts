@@ -24,7 +24,7 @@
           myscript = pkgs.writeScriptBin "myscript" ''
             echo foo
           '';
-          output2 = pkgs.writeScriptBin "myscript" ''
+          output2 = pkgs.writeScriptBin "myscript2" ''
             chmod 777 myscript.sh
             ./myscript.sh;
           '';
