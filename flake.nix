@@ -24,6 +24,17 @@
           myscript = pkgs.writeScriptBin "myscript" ''
             echo foo
           '';
+          output2 = pkgs.writeScriptBin "myscript" ''
+            chmod 777 myscript.sh
+            ./myscript.sh;
+          '';
+          # nix run/build '.#output3'
+          # if nix build was :xa
+          output3 = pkgs.writeScriptBin "myscript" ''
+            export PATH=${pkgs.lib.makeBinPath [ pkgs.hello ]}:$PATH
+            chmod 777 run-hello.sh
+            ${./run-hello.sh}
+          '';
         };
       }
     );
