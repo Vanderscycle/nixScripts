@@ -30,7 +30,7 @@
           '';
           # nix run/build '.#output3'
           # if nix build was :xa
-          output3 = pkgs.writeScriptBin "myscript" ''
+          output3 = pkgs.writeScriptBin "myscript3" ''
             export PATH=${pkgs.lib.makeBinPath [ pkgs.hello ]}:$PATH
             chmod 777 run-hello.sh
             ${./run-hello.sh}
