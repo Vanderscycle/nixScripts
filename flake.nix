@@ -21,7 +21,7 @@
       in
       {
         packages = {
-          myscript = pkgs.writeScriptBin "myscript" ''
+          output1 = pkgs.writeScriptBin "myscript" ''
             echo foo
           '';
           output2 = pkgs.writeScriptBin "myscript2" ''
