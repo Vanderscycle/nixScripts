@@ -18,8 +18,10 @@
           inherit system;
           config.allowUnfree = true;
         };
+        src = ./g-update/main.go;
       in
       {
+
         packages = {
           output1 = pkgs.writeScriptBin "myscript" ''
             echo foo
@@ -35,6 +37,15 @@
             chmod 777 run-hello.sh
             ${./run-hello.sh}
           '';
+
+          output4 = pkgs.stdenv.mkDerivation {
+            name = "myscript";
+            src = ./g-update/main.go;
+            buildInputs = [ pkgs.go ];
+            installPhase = ''
+              go build -o $out/bin/myscript ${src}
+            '';
+          };
         };
       }
     );
