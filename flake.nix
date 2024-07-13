@@ -29,7 +29,7 @@
           inherit system;
           config.allowUnfree = true;
         };
-        g-update = import ./g-update/flake.nix;
+        callPackage = pkgs.darwin.apple_sdk_11_0.callPackage or pkgs.callPackage;
       in
       {
 
@@ -42,20 +42,15 @@
             ./myscript.sh;
           '';
           # nix run/build '.#output3'
-          # if nix build was :xa
           output3 = pkgs.writeScriptBin "myscript3" ''
             export PATH=${pkgs.lib.makeBinPath [ pkgs.hello ]}:$PATH
             chmod 777 run-hello.sh
             ${./run-hello.sh}
           '';
-          output4 = g-update.outputs {
-            inherit self;
-            inherit nixpkgs;
-            inherit flake-utils;
-            inherit gomod2nix;
-            inherit pre-commit-hooks;
-            # derive = "a";
+          output4 = callPackage ./g-update/. {
+            inherit (gomod2nix.legacyPackages.${system}) buildGoApplication;
           };
+
         };
       }
     );
