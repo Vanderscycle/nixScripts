@@ -3,12 +3,23 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    gomod2nix = {
+      url = "github:nix-community/gomod2nix";
+      inputs = {
+        flake-utils.follows = "flake-utils";
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
+    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
   };
+
   outputs =
     {
       self,
       nixpkgs,
       flake-utils,
+      gomod2nix,
+      pre-commit-hooks,
       ...
     }@inputs:
     flake-utils.lib.eachDefaultSystem (
@@ -18,7 +29,7 @@
           inherit system;
           config.allowUnfree = true;
         };
-        src = ./g-update/main.go;
+        g-update = import ./g-update/flake.nix;
       in
       {
 
@@ -37,14 +48,13 @@
             chmod 777 run-hello.sh
             ${./run-hello.sh}
           '';
-
-          output4 = pkgs.stdenv.mkDerivation {
-            name = "myscript";
-            src = ./g-update/main.go;
-            buildInputs = [ pkgs.go ];
-            installPhase = ''
-              go build -o $out/bin/myscript ${src}
-            '';
+          output4 = g-update.outputs {
+            inherit self;
+            inherit nixpkgs;
+            inherit flake-utils;
+            inherit gomod2nix;
+            inherit pre-commit-hooks;
+            # derive = "a";
           };
         };
       }
