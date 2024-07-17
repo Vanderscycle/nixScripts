@@ -50,7 +50,9 @@
           output4 = callPackage ./g-update/. {
             inherit (gomod2nix.legacyPackages.${system}) buildGoApplication;
           };
-
+          helloGo = callPackage ./g-hello/. {
+            inherit (gomod2nix.legacyPackages.${system}) buildGoApplication;
+          };
         };
       }
     );
