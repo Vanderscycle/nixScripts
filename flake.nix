@@ -19,17 +19,16 @@
       nixpkgs,
       flake-utils,
       gomod2nix,
-      pre-commit-hooks,
       ...
     }@inputs:
-    flake-utils.lib.eachDefaultSystem (
+    flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ] (
       system:
       let
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
         };
-        callPackage = pkgs.darwin.apple_sdk_11_0.callPackage or pkgs.callPackage;
+        callPackage = pkgs.callPackage; # pkgs.darwin.apple_sdk_11_0.callPackage or
       in
       {
 
@@ -38,8 +37,13 @@
             echo foo
           '';
           output2 = pkgs.writeScriptBin "myscript2" ''
+            export PATH=${pkgs.lib.makeBinPath [ pkgs.cmatrix ]}:$PATH
             chmod 777 myscript.sh
             ./myscript.sh;
+            echo "Running cmatrix for 3 seconds..."
+            cmatrix -s -u 9 -C blue &
+            sleep 5
+            kill $!
           '';
           # nix run/build '.#output3'
           output3 = pkgs.writeScriptBin "myscript3" ''
